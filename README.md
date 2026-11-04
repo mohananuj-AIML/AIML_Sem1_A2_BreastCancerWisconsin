@@ -1,85 +1,72 @@
-README.txt
-===========
+# Breast Cancer Classification - ML Assignment 2
 
-PROJECT
--------
-Streamlit app for Machine Learning Assignment 2 (M.Tech AIML).
-Dataset: Breast Cancer Wisconsin Diagnostic Dataset.
-The app loads the five saved trained estimators and evaluates uploaded test CSV data.
+## a. Problem statement
+Create an application on streamlit for Machine learning assignment2. All the files should be uploaded to github, and streamlit application should directly connect to github to start the application. Application should compare five classification algorithms for predicting whether a breast tumor is benign or malignant using Kaggles Breast Cancer Wisconsin (Diagnostic) Data Set.
 
-FILES
------
-app.py
-    Streamlit UI and model inference/evaluation.
-requirements.txt
-    Runtime Python dependencies.
-Data/
-    Dataset and held-out test records CSV.
-model/combined models.joblib
-    Dictionary containing the saved trained estimators:
-    Logistic Regression, Decision Tree, KNN, Naive Bayes, and Support Vector Machine.
+## b. Dataset description
+Source: UCI Breast Cancer Wisconsin (Diagnostic) available on Kaggle. The dataset has 569 rows, 33 numerical features, and no missing values. The label is recoded to 0 = benign, 1 = malignant. Training dataset contains 455 data whereas testing dataset contains 114 data. 
 
-FEATURES
---------
-- Upload test records as CSV (target column must be diagnosis).
-- Model selection dropdown.
-- Side-by-side evaluation metrics for all five models.
-- Metrics for selected model: Accuracy, AUC, Precision, Recall, F1, MCC.
-- Confusion matrix and classification report.
-- Preview and download predictions and model comparison metrics.
-- Uses saved models; does not retrain.
+## c. GitHub Repository Link
+https://www.kaggle.com/datasets/uciml/breast-cancer-wisconsin-data?resource=download
 
-LOCAL RUN
----------
-1. Install Python. A Python version supported by the pinned scikit-learn version is recommended.
-2. Open a terminal at the project root (same directory as app.py).
-3. Install packages:
-       python -m pip install -r requirements.txt
-4. Start Streamlit:
-       streamlit run app.py
-5. Open the local URL shown in the terminal.
+### Model Evaluation Summary
 
-TEST CSV FORMAT
----------------
-CSV must have 30 numeric feature columns matching the training dataset and one
-diagnosis target column. diagnosis should be encoded as 0 (benign) or 1 (malignant).
-The app drops optional id and Unnamed: 32 columns if present.
-For the test dataset generated in the notebook, target column diagnosis is present.
+| ML Model Name          | Accuracy |    AUC | Precision | Recall |     F1 |    MCC |
+|:-----------------------|---------:|-------:|----------:|-------:|-------:|-------:|
+| Logistic Regression    |   0.9825 |  0.9977 |     1.0000 | 0.9524 | 0.9756 | 0.9626 |
+| Decision Tree          |   0.9561 |  0.9454 |     0.9744 | 0.9048 | 0.9383 | 0.9058 |
+| KNN                    |   0.9386 |  0.9825 |     0.9730 | 0.8571 | 0.9114 | 0.8688 |
+| Naive Bayes            |   0.9386 |  0.9934 |     1.0000 | 0.8333 | 0.9091 | 0.8715 |
+| Support Vector Machine |   0.9737 |  0.9947 |     1.0000 | 0.9286 | 0.9630 | 0.9442 |
 
-GITHUB REPOSITORY
------------------
-Keep app.py, requirements.txt, README.txt, Data/, and model/ at the repository root.
-Commit and push these files. Include the notebook/source code as requested by the
-assignment. Check that the repository's model artifact is within GitHub's file size
-limits; if it exceeds them, use Git LFS or an approved hosting approach.
+### Optimized Hyperparameters & Confusion Matrices
+* **Logistic Regression**
+  * **Best Params:** `{'C': 0.1, 'max_iter': 100}`
+  * **Confusion Matrix:** 
+    ```text
+    [[72  0]
+     [ 2 40]]
+    ```
+* **Decision Tree**
+  * **Best Params:** `{'criterion': 'entropy', 'max_depth': 10}`
+  * **Confusion Matrix:** 
+    ```text
+    [[71  1]
+     [ 4 38]]
+    ```
+* **KNN**
+  * **Best Params:** `{'n_neighbors': 3, 'weights': 'uniform'}`
+  * **Confusion Matrix:** 
+    ```text
+    [[71  1]
+     [ 6 36]]
+    ```
+* **Naive Bayes**
+  * **Best Params:** `{'var_smoothing': 1e-09}`
+  * **Confusion Matrix:** 
+    ```text
+    [[72  0]
+     [ 7 35]]
+    ```
+* **Support Vector Machine**
+  * **Best Params:** `{'C': 1.0, 'gamma': 'scale', 'kernel': 'rbf'}`
+  * **Confusion Matrix:** 
+    ```text
+    [[72  0]
+     [ 3 39]]
+    ```
 
-STREAMLIT COMMUNITY CLOUD DEPLOYMENT
-------------------------------------
-1. Push the project to GitHub.
-2. Open Streamlit Community Cloud and create a new app.
-3. Choose the repository and branch.
-4. Set app entry point to app.py at repository root.
-5. Deploy. The Cloud environment installs packages from requirements.txt.
+### Observations about model performance
 
-MODEL COMPATIBILITY / SECURITY
-------------------------------
-The combined model file was serialized with scikit-learn 1.9.0. The requirements
-file pins scikit-learn 1.9.0 to match the training artifact. Serialized joblib
-files can execute code during loading: only load trusted model files.
+| ML Model Name | Observation about model performance |
+| :--- | :--- |
+| **Logistic Regression** | **Logistic Regression** achieved the highest overall performance on the test set, with an outstanding accuracy of **98.25%** and a top F1-score of **97.56%**. It achieved a perfect Precision of **100%**, meaning it yielded zero false positives (no benign cases were incorrectly classified as malignant). It also showed the highest recall (**95.24%**), misclassifying only 2 malignant samples as benign. |
+| **Decision Tree** | Optimized using the entropy criterion, the **Decision Tree** showed strong performance, achieving an accuracy of **95.61%** and an F1-score of **93.83%**. While highly efficient, it missed 4 actual malignant cases (Recall: 90.48%) and had 1 false positive instance. |
+| **KNN** | **KNN** yielded an accuracy of **93.86%** and an F1-score of **91.14%** using a neighborhood size of 3. Feature scaling applied via the pipeline was crucial to its layout, though its recall (**85.71%**) trailed behind Logistic Regression and SVM. |
+| **Naive Bayes** | **Gaussian Naive Bayes** produced an accuracy of **93.86%** and an F1-score of **90.91%**. While it yielded a perfect Precision score (**100%**), its lower recall score of **83.33%** (missing 7 malignant cases) makes it less ideal for this clinical context where minimizing false negatives is critical. |
+| **Support Vector Machine** | The **SVM** model utilizing an RBF kernel proved highly reliable, achieving the second-best accuracy of **97.37%** and an F1-score of **96.30%**. Like Logistic Regression, it maintained a perfect Precision rate of **100%** and limited misclassified malignant cases down to just 3. |
 
-ASSIGNMENT README ITEMS TO FILL IN
-----------------------------------
-Problem statement:
-[Explain the classification task.]
+### Overall winner for this dataset
+After comparing all five optimized classification models, **Logistic Regression** emerged as the overall winner for this dataset. It achieved the highest **Accuracy (98.25%)**, highest **F1-Score (0.9756)**, highest **MCC (0.9626)**, and highest **Recall (95.24%)** while completely avoiding any false-positive classifications (100% Precision). 
 
-Dataset description:
-[State source, number of instances/features and target classes.]
-
-GitHub Repository Link:
-[Paste the repository URL.]
-
-Model metric comparison and observations:
-[Use measured output from the notebook/app. Explain model performance.]
-
-Overall winner:
-[Select and justify based on the calculated metrics.]
+**Overall Winner: Logistic Regression**
